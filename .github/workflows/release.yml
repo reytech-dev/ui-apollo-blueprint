@@ -42,14 +42,14 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Validate pushed commits
         if: github.event_name == 'push'
         env:
           COMMITLINT_FROM: ${{ github.event.before }}
           COMMITLINT_TO: ${{ github.sha }}
-        run: pnpm run commitlint
+        run: pnpm exec commitlint
 
       - name: Validate pull request commits
         if: github.event_name == 'pull_request'
@@ -77,7 +77,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Preview semantic-release
         env:
@@ -96,7 +96,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
-      
+
       - uses: pnpm/action-setup@v4
 
       - name: Setup Node.js
@@ -116,7 +116,7 @@ jobs:
           password: ${{ github.token }}
 
       - name: Install dependencies
-        run: pnpm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Release
         env:
