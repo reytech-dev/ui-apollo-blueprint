@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/reytech-dev/ui-apollo-blueprint/compare/v1.0.0...v1.1.0) (2026-06-10)
+
+### Features
+
+* **image:** publish image to ghcr ([f0bafe0](https://github.com/reytech-dev/ui-apollo-blueprint/commit/f0bafe09990b53f0fbdfcc3b90f2478d78ac410b))
+
 ## 1.0.0 (2026-06-10)
 
 ### Features
