@@ -4,3 +4,4 @@ pnpm-lock.yaml
 .releaserc.yml
 test-results/
 coverage/
+CHANGELOG.md
