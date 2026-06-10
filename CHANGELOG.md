@@ -1,0 +1,19 @@
+## 1.0.0 (2026-06-10)
+
+### Features
+
+* **init:** setup ui repository with ci pipeline ([4d551d5](https://github.com/reytech-dev/ui-apollo-blueprint/commit/4d551d59ed7f12a47afd8822ae7f1309a9a3a0cd))
+
+### Bug Fixes
+
+* **action:** fix action formatting ([c50dbfd](https://github.com/reytech-dev/ui-apollo-blueprint/commit/c50dbfd9790ba3ed8034ab0d25bee7348ca15ded))
+* **commitlint:** add missing commitlint dev dep ([3198ab0](https://github.com/reytech-dev/ui-apollo-blueprint/commit/3198ab093e3fa45e714a26af4c20f6454ee44900))
+* **commitlint:** add missing commitlint script command ([087c781](https://github.com/reytech-dev/ui-apollo-blueprint/commit/087c7817af2db8bd4e41f58bf2b4e5e32e7e4822))
+* **commitlint:** add missing package.json changes ([aad1fcc](https://github.com/reytech-dev/ui-apollo-blueprint/commit/aad1fccc66d59b6c044852da80eb98c516316266))
+* **commitlint:** move commitlint command to release pipeline ([9f21ebe](https://github.com/reytech-dev/ui-apollo-blueprint/commit/9f21ebef4cd091be0806d92aecf882c45c54bad4))
+* **image:** add missing CI environment variable ([84ebae6](https://github.com/reytech-dev/ui-apollo-blueprint/commit/84ebae69742c4aad14c8e20b3f591d1cefc953cb))
+* **image:** add missing pnpm-workspace.yaml to build image ([9cc30d2](https://github.com/reytech-dev/ui-apollo-blueprint/commit/9cc30d20f721ba3b0be3c8b4535fc9fdb08cb131))
+* **pnpm:** add missing pnpm action ([df6b7b8](https://github.com/reytech-dev/ui-apollo-blueprint/commit/df6b7b8c78f398c5509ec1d25e2a279b78f73493))
+* **pnpm:** add missing pnpm version ([abb7de1](https://github.com/reytech-dev/ui-apollo-blueprint/commit/abb7de1ec95538fdc66aa4c6b9e399beb39825de))
+* **pnpm:** use pnpm in release pipeline as well ([0f729fa](https://github.com/reytech-dev/ui-apollo-blueprint/commit/0f729fa14191990f83d3d00f638e568d96425fc7))
+* **semantic-release:** add missing semantic release packages ([6202178](https://github.com/reytech-dev/ui-apollo-blueprint/commit/62021784a1a80bca9e3a6d55d4958c21c4c279e0))
