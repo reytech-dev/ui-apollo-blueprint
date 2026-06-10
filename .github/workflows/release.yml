@@ -49,7 +49,7 @@ jobs:
         env:
           COMMITLINT_FROM: ${{ github.event.before }}
           COMMITLINT_TO: ${{ github.sha }}
-        run: pnpm exec commitlint
+        run: pnpm exec commitlint --from=$COMMITLINT_FROM --to=$COMMITLINT_TO
 
       - name: Validate pull request commits
         if: github.event_name == 'pull_request'
