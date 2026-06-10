@@ -13,7 +13,8 @@
     "e2e": "playwright test",
     "lint": "eslint .",
     "format:check": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "commitlint": "commitlint --from=${COMMITLINT_FROM:-HEAD~1} --to=${COMMITLINT_TO:-HEAD}"
   },
   "dependencies": {
     "@apollo/client": "^3.13.1",
