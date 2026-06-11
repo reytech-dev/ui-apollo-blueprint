@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider } from '@apollo/client/testing/react';
 import { describe, it, expect } from 'vitest';
 import { CreateBook } from '../components/CreateBook';
-import { CREATE_BOOK_MUTATION, BOOKS_QUERY } from '../graphql';
+import { CreateBookDocument, BooksDocument } from '../graphql/generated';
 
 describe('CreateBook', () => {
   it('renders the form with inputs and submit button', () => {
@@ -23,7 +23,7 @@ describe('CreateBook', () => {
     const user = userEvent.setup();
     const mock = {
       request: {
-        query: CREATE_BOOK_MUTATION,
+        query: CreateBookDocument,
         variables: { title: '', author: '', publishedYear: null },
       },
       result: {
@@ -48,7 +48,7 @@ describe('CreateBook', () => {
     const user = userEvent.setup();
     const createBookMock = {
       request: {
-        query: CREATE_BOOK_MUTATION,
+        query: CreateBookDocument,
         variables: { title: 'Clean Code', author: 'Robert C. Martin', publishedYear: 2008 },
       },
       result: {
@@ -66,7 +66,7 @@ describe('CreateBook', () => {
     };
 
     const refetchMock = {
-      request: { query: BOOKS_QUERY },
+      request: { query: BooksDocument },
       result: { data: { books: [], __typename: 'Query' } },
     };
 
@@ -81,6 +81,8 @@ describe('CreateBook', () => {
     await user.type(screen.getByLabelText('Published Year'), '2008');
     await user.click(screen.getByRole('button', { name: 'Create Book' }));
 
-    expect(screen.getByLabelText('Title')).toHaveValue('');
+    await waitFor(() => {
+      expect(screen.getByLabelText('Title')).toHaveValue('');
+    });
   });
 });

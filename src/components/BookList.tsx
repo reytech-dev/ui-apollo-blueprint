@@ -1,15 +1,8 @@
-import { useQuery } from '@apollo/client';
-import { BOOKS_QUERY } from '../graphql';
-
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  publishedYear?: number | null;
-}
+import { useQuery } from '@apollo/client/react';
+import { BooksDocument } from '../graphql/generated';
 
 export function BookList() {
-  const { loading, error, data } = useQuery<{ books: Book[] }>(BOOKS_QUERY);
+  const { loading, error, data } = useQuery(BooksDocument);
 
   if (loading) return <p>Loading books...</p>;
   if (error) return <p>Error: {error.message}</p>;

@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import { MockedProvider } from '@apollo/client/testing';
+import { MockedProvider } from '@apollo/client/testing/react';
 import { describe, it, expect } from 'vitest';
 import { BookList } from '../components/BookList';
-import { BOOKS_QUERY } from '../graphql';
+import { BooksDocument } from '../graphql/generated';
 
 describe('BookList', () => {
   it('shows loading state', () => {
     const mock = {
-      request: { query: BOOKS_QUERY },
+      request: { query: BooksDocument },
       result: { data: { books: [] } },
       delay: Infinity,
     };
@@ -22,7 +22,7 @@ describe('BookList', () => {
 
   it('shows empty state', async () => {
     const mock = {
-      request: { query: BOOKS_QUERY },
+      request: { query: BooksDocument },
       result: { data: { books: [], __typename: 'Query' } },
     };
 
@@ -37,7 +37,7 @@ describe('BookList', () => {
 
   it('renders a list of books', async () => {
     const mock = {
-      request: { query: BOOKS_QUERY },
+      request: { query: BooksDocument },
       result: {
         data: {
           books: [
@@ -76,7 +76,7 @@ describe('BookList', () => {
 
   it('shows error state', async () => {
     const mock = {
-      request: { query: BOOKS_QUERY },
+      request: { query: BooksDocument },
       error: new Error('Network error'),
     };
 

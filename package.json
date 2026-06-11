@@ -14,10 +14,12 @@
     "lint": "eslint .",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
+    "codegen": "graphql-codegen",
     "commitlint": "commitlint --from=${COMMITLINT_FROM:-HEAD~1} --to=${COMMITLINT_TO:-HEAD}"
   },
   "dependencies": {
     "@apollo/client": "^4.2.3",
+    "rxjs": "^7.8.1",
     "graphql": "^16.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -25,6 +27,11 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/typescript": "^4.0.0",
+    "@graphql-codegen/typescript-operations": "^4.0.0",
+    "@graphql-codegen/typed-document-node": "^5.0.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@eslint/js": "^9.0.0",
     "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -32,8 +39,8 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^6.0.2",
-    "eslint": "^10.4.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.39.4",
     "eslint-plugin-react": "^7.0.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",

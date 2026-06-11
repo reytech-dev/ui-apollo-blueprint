@@ -1,0 +1,17 @@
+query Books {
+  books {
+    id
+    title
+    author
+    publishedYear
+  }
+}
+
+mutation CreateBook($title: String!, $author: String!, $publishedYear: Int) {
+  createBook(title: $title, author: $author, publishedYear: $publishedYear) {
+    id
+    title
+    author
+    publishedYear
+  }
+}

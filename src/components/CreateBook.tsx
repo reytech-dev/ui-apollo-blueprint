@@ -1,31 +1,33 @@
 import { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { CREATE_BOOK_MUTATION, BOOKS_QUERY } from '../graphql';
+import { useMutation } from '@apollo/client/react';
+import { CreateBookDocument, BooksDocument } from '../graphql/generated';
 
 export function CreateBook() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [publishedYear, setPublishedYear] = useState('');
 
-  const [createBook, { loading, error }] = useMutation(CREATE_BOOK_MUTATION, {
-    refetchQueries: [{ query: BOOKS_QUERY }],
-    onCompleted: () => {
+  const [createBook, { loading, error }] = useMutation(CreateBookDocument, {
+    refetchQueries: [{ query: BooksDocument }],
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !author.trim()) return;
+    try {
+      await createBook({
+        variables: {
+          title: title.trim(),
+          author: author.trim(),
+          publishedYear: publishedYear ? parseInt(publishedYear, 10) : null,
+        },
+      });
       setTitle('');
       setAuthor('');
       setPublishedYear('');
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !author.trim()) return;
-    createBook({
-      variables: {
-        title: title.trim(),
-        author: author.trim(),
-        publishedYear: publishedYear ? parseInt(publishedYear, 10) : null,
-      },
-    });
+    } catch {
+      // error surfaced via the error property from useMutation
+    }
   };
 
   return (
