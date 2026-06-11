@@ -1,3 +1,21 @@
+## [1.2.0](https://github.com/reytech-dev/ui-apollo-blueprint/compare/v1.1.0...v1.2.0) (2026-06-11)
+
+### Features
+
+* **apollo:** upgrade to apollo 4.x ([6172c53](https://github.com/reytech-dev/ui-apollo-blueprint/commit/6172c53403789f9b3fc4f6ed07c17268b453f90f))
+* **apollo:** upgrade to apollo 4.x ([4f19969](https://github.com/reytech-dev/ui-apollo-blueprint/commit/4f1996972a6df4d15c880ad190d7ace137d49617))
+
+### Documentation
+
+* **AGENTS.md:** add AGENTS.md for agent usage ([39fdcc1](https://github.com/reytech-dev/ui-apollo-blueprint/commit/39fdcc1b4dd2841ac23734086c6e48c738bcbf58))
+
+### Chores
+
+* **actions:** update github action versions ([883627d](https://github.com/reytech-dev/ui-apollo-blueprint/commit/883627d9e457b1459c3c35dca744f1173facedf8))
+* **ci:** all build deps commit messages ([fd513c6](https://github.com/reytech-dev/ui-apollo-blueprint/commit/fd513c6ead56deaaaeed3063b804279dd147dfa6))
+* **lint:** update lint config ([99693ae](https://github.com/reytech-dev/ui-apollo-blueprint/commit/99693aea84aea137dbd13dff6ac4bac5f913d8b8))
+* **prettier:** exclude CHANGELOG from prettier check ([8f89f09](https://github.com/reytech-dev/ui-apollo-blueprint/commit/8f89f0943b0ad6f5b885c3cc61b56020fdc2e06b))
+
 ## [1.1.0](https://github.com/reytech-dev/ui-apollo-blueprint/compare/v1.0.0...v1.1.0) (2026-06-10)
 
 ### Features
