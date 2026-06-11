@@ -5,3 +5,4 @@ pnpm-lock.yaml
 test-results/
 coverage/
 CHANGELOG.md
+src/graphql/generated.ts
