@@ -5,6 +5,7 @@
 This is a **React 19 + Apollo Client 4 + GraphQL** frontend boilerplate using **Test-Driven Development**. It serves as a starting point for AI coding agents to build frontend applications that consume a GraphQL backend.
 
 **Core stack:**
+
 - **React 19** with functional components and hooks
 - **Apollo Client 4.2** — declarative data fetching, `HttpLink`, `InMemoryCache`
 - **rxjs 7.8** — peer dependency of Apollo Client 4
@@ -38,35 +39,35 @@ When instructed to create a new project from this blueprint, accept a **project 
 
 ### Phase 1: Rename identity
 
-| # | File | Action |
-|---|---|---|
-| 1 | `package.json` | Replace `"name": "ui-apollo-blueprint"` with the new project name; reset `"version"` to `"0.0.0-development"` |
-| 2 | `index.html` | Replace `<title>Bookstore</title>` with the new project title |
-| 3 | `src/App.tsx` | Replace the heading `<h1>Bookstore</h1>` with the new project name (this will be fully replaced in Phase 2 anyway) |
-| 4 | `.releaserc.yml` | Replace the Docker image path `ghcr.io/reytech-dev/ui-apollo-blueprint` with the new registry path (two occurrences: in `prepareCmd` build and push commands) |
-| 5 | `codegen.ts` | Update the `generates` output path if you want to place generated code elsewhere |
-| 6 | `.github/workflows/ci.yml` | Update job names if referencing the old project name. Add a `pnpm codegen` step before `pnpm test` if you want CI to catch schema mismatches. |
-| 7 | `.github/workflows/release.yml` | Update any project-specific references |
-| 8 | `AGENTS.md` | Replace all occurrences of `ui-apollo-blueprint` and `Bookstore` with the new project name |
-| 9 | `CHANGELOG.md` | Delete (or replace with empty changelog for v0.0.0) |
+| #   | File                            | Action                                                                                                                                                        |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `package.json`                  | Replace `"name": "ui-apollo-blueprint"` with the new project name; reset `"version"` to `"0.0.0-development"`                                                 |
+| 2   | `index.html`                    | Replace `<title>Bookstore</title>` with the new project title                                                                                                 |
+| 3   | `src/App.tsx`                   | Replace the heading `<h1>Bookstore</h1>` with the new project name (this will be fully replaced in Phase 2 anyway)                                            |
+| 4   | `.releaserc.yml`                | Replace the Docker image path `ghcr.io/reytech-dev/ui-apollo-blueprint` with the new registry path (two occurrences: in `prepareCmd` build and push commands) |
+| 5   | `codegen.ts`                    | Update the `generates` output path if you want to place generated code elsewhere                                                                              |
+| 6   | `.github/workflows/ci.yml`      | Update job names if referencing the old project name. Add a `pnpm codegen` step before `pnpm test` if you want CI to catch schema mismatches.                 |
+| 7   | `.github/workflows/release.yml` | Update any project-specific references                                                                                                                        |
+| 8   | `AGENTS.md`                     | Replace all occurrences of `ui-apollo-blueprint` and `Bookstore` with the new project name                                                                    |
+| 9   | `CHANGELOG.md`                  | Delete (or replace with empty changelog for v0.0.0)                                                                                                           |
 
 ### Phase 2: Strip boilerplate example
 
 Delete the entire `Book` example feature:
 
-| # | File | Action |
-|---|---|---|
-| 10 | `src/components/BookList.tsx` | Delete |
-| 11 | `src/components/CreateBook.tsx` | Delete |
-| 12 | `src/__tests__/BookList.test.tsx` | Delete |
-| 13 | `src/__tests__/CreateBook.test.tsx` | Delete |
-| 14 | `src/graphql/operations/books.graphql` | Delete (the Book-specific operations) |
-| 15 | `src/graphql/schema.graphqls` | Replace with the new backend schema. Keep at minimum an empty `type Query { _empty: String }` scaffold. |
-| 16 | `src/graphql/generated.ts` | Delete (stale generated code). Regenerate with `pnpm codegen` after updating the schema. |
-| 17 | `src/graphql.ts` | Strip to minimal Apollo Client setup only (no React imports): |
-| 18 | `src/App.tsx` | Strip to a minimal scaffold (a single `<main>` with the project heading). No components imported. |
-| 19 | `e2e/books.spec.ts` | Delete |
-| 20 | `e2e/auth.setup.ts` | Keep as-is (placeholder auth setup, useful for any application) |
+| #   | File                                   | Action                                                                                                  |
+| --- | -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 10  | `src/components/BookList.tsx`          | Delete                                                                                                  |
+| 11  | `src/components/CreateBook.tsx`        | Delete                                                                                                  |
+| 12  | `src/__tests__/BookList.test.tsx`      | Delete                                                                                                  |
+| 13  | `src/__tests__/CreateBook.test.tsx`    | Delete                                                                                                  |
+| 14  | `src/graphql/operations/books.graphql` | Delete (the Book-specific operations)                                                                   |
+| 15  | `src/graphql/schema.graphqls`          | Replace with the new backend schema. Keep at minimum an empty `type Query { _empty: String }` scaffold. |
+| 16  | `src/graphql/generated.ts`             | Delete (stale generated code). Regenerate with `pnpm codegen` after updating the schema.                |
+| 17  | `src/graphql.ts`                       | Strip to minimal Apollo Client setup only (no React imports):                                           |
+| 18  | `src/App.tsx`                          | Strip to a minimal scaffold (a single `<main>` with the project heading). No components imported.       |
+| 19  | `e2e/books.spec.ts`                    | Delete                                                                                                  |
+| 20  | `e2e/auth.setup.ts`                    | Keep as-is (placeholder auth setup, useful for any application)                                         |
 
 **Minimal `src/graphql.ts` after stripping:**
 
@@ -93,12 +94,12 @@ export function App() {
 
 ### Phase 3: Cleanup residue
 
-| # | File | Action |
-|---|---|---|
-| 21 | `dist/` | Delete the entire directory (stale build output) |
-| 22 | `vite.config.ts` | **Keep as-is.** The `/graphql` proxy to `java-runner:8080` and `node-runner` allowed host work generically. Adjust `VITE_GRAPHQL_URL` env var at runtime if needed. |
-| 23 | `codegen.ts` | **Keep as-is.** The config points to `src/graphql/schema.graphqls` and `src/graphql/operations/*.graphql` generically. |
-| 24 | `eslint.config.js` | **Keep as-is.** The JS + TS + React rule set applies universally. |
+| #   | File               | Action                                                                                                                                                              |
+| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 21  | `dist/`            | Delete the entire directory (stale build output)                                                                                                                    |
+| 22  | `vite.config.ts`   | **Keep as-is.** The `/graphql` proxy to `java-runner:8080` and `node-runner` allowed host work generically. Adjust `VITE_GRAPHQL_URL` env var at runtime if needed. |
+| 23  | `codegen.ts`       | **Keep as-is.** The config points to `src/graphql/schema.graphqls` and `src/graphql/operations/*.graphql` generically.                                              |
+| 24  | `eslint.config.js` | **Keep as-is.** The JS + TS + React rule set applies universally.                                                                                                   |
 
 ### Verify
 
@@ -148,6 +149,7 @@ mutation CreateBook($title: String!, $author: String!, $publishedYear: Int) {
 ```
 
 Backend resolver receives individual `@Argument` annotations:
+
 ```java
 @MutationMapping
 public Mono<Book> createBook(@Argument String title, @Argument String author, @Argument Integer publishedYear)
@@ -165,6 +167,7 @@ mutation CreateBook($input: CreateBookInput!) {
 ```
 
 Backend resolver receives a single `@Argument` with the input type:
+
 ```java
 @MutationMapping
 public Mono<Book> createBook(@Argument CreateBookInput input)
@@ -186,6 +189,7 @@ This blueprint includes `@graphql-codegen` for automatic TypeScript type generat
 ### Setup
 
 The following dev dependencies provide code generation:
+
 - `@graphql-codegen/cli` — CLI runner (`pnpm codegen`)
 - `@graphql-codegen/typescript` — generates TypeScript types from the schema
 - `@graphql-codegen/typescript-operations` — generates typed document nodes and data types from `.graphql` operations
@@ -221,6 +225,7 @@ export default config;
 ### What you get (example: Books query)
 
 Given this operation in `src/graphql/operations/books.graphql`:
+
 ```graphql
 query Books {
   books {
@@ -233,6 +238,7 @@ query Books {
 ```
 
 Codegen produces (in `generated.ts`):
+
 - `BooksQuery` — TypeScript type for the query result
 - `BooksQueryVariables` — TypeScript type for query variables (empty for this query)
 - `BooksDocument` — `TypedDocumentNode<BooksQuery, BooksQueryVariables>` — pass to `useQuery()` for full type inference
@@ -240,13 +246,29 @@ Codegen produces (in `generated.ts`):
 ### Component usage
 
 **Before (manual types):**
+
 ```tsx
-interface Book { id: string; title: string; author: string; publishedYear?: number | null; }
-export const BOOKS_QUERY = gql`query Books { books { id title author publishedYear } }`;
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  publishedYear?: number | null;
+}
+export const BOOKS_QUERY = gql`
+  query Books {
+    books {
+      id
+      title
+      author
+      publishedYear
+    }
+  }
+`;
 const { loading, error, data } = useQuery<{ books: Book[] }>(BOOKS_QUERY);
 ```
 
 **After (codegen):**
+
 ```tsx
 import { useQuery } from '@apollo/client/react';
 import { BooksDocument } from '../graphql/generated';
@@ -272,6 +294,7 @@ const mock = {
 ### Keeping generated code in sync
 
 Always run `pnpm codegen` after:
+
 - Updating the schema (`schema.graphqls`)
 - Adding or modifying `.graphql` operation files
 - Pulling from a branch where the schema changed
@@ -309,15 +332,15 @@ codegen.ts                        # GraphQL Codegen configuration
 
 ### Layer Responsibilities
 
-| Layer | Purpose | Rules |
-|---|---|---|
-| **`src/graphql/schema.graphqls`** | Backend schema — the source of truth | Never hand-edit types here. Copy from the backend repo. |
-| **`src/graphql/operations/`** | GraphQL operations in `.graphql` files | One file per feature or per operation. No `gql` tags needed — pure GraphQL syntax. |
-| **`src/graphql/generated.ts`** | Auto-generated: schema types, operation types, `TypedDocumentNode` exports | Never hand-edit. Run `pnpm codegen` to regenerate. |
-| **`src/graphql.ts`** | Apollo Client configuration only | No operations or React imports here. |
-| **`src/components/`** | React components, UI rendering, user interaction | Import hooks (`useQuery`, `useMutation`) from `@apollo/client/react`. Import `*Document` nodes from `generated.ts`. Handle all render states. |
-| **`src/__tests__/`** | Unit tests for components | Use `MockedProvider` from `@apollo/client/testing/react` with `*Document` nodes. Test all states. |
-| **`e2e/`** | End-to-end browser tests | Use Playwright. Tag smoke tests with `@smoke`. Depend on `auth.setup`. |
+| Layer                             | Purpose                                                                    | Rules                                                                                                                                         |
+| --------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`src/graphql/schema.graphqls`** | Backend schema — the source of truth                                       | Never hand-edit types here. Copy from the backend repo.                                                                                       |
+| **`src/graphql/operations/`**     | GraphQL operations in `.graphql` files                                     | One file per feature or per operation. No `gql` tags needed — pure GraphQL syntax.                                                            |
+| **`src/graphql/generated.ts`**    | Auto-generated: schema types, operation types, `TypedDocumentNode` exports | Never hand-edit. Run `pnpm codegen` to regenerate.                                                                                            |
+| **`src/graphql.ts`**              | Apollo Client configuration only                                           | No operations or React imports here.                                                                                                          |
+| **`src/components/`**             | React components, UI rendering, user interaction                           | Import hooks (`useQuery`, `useMutation`) from `@apollo/client/react`. Import `*Document` nodes from `generated.ts`. Handle all render states. |
+| **`src/__tests__/`**              | Unit tests for components                                                  | Use `MockedProvider` from `@apollo/client/testing/react` with `*Document` nodes. Test all states.                                             |
+| **`e2e/`**                        | End-to-end browser tests                                                   | Use Playwright. Tag smoke tests with `@smoke`. Depend on `auth.setup`.                                                                        |
 
 ## Adding a New Feature
 
@@ -413,7 +436,11 @@ describe('FooList', () => {
       result: { data: { foos: [] } },
       delay: Infinity, // Keeps loading state indefinitely
     };
-    render(<MockedProvider mocks={[mock]}><FooList /></MockedProvider>);
+    render(
+      <MockedProvider mocks={[mock]}>
+        <FooList />
+      </MockedProvider>,
+    );
     expect(screen.getByText('Loading foos...')).toBeInTheDocument();
   });
 
@@ -422,7 +449,11 @@ describe('FooList', () => {
       request: { query: FoosDocument },
       result: { data: { foos: [], __typename: 'Query' } },
     };
-    render(<MockedProvider mocks={[mock]}><FooList /></MockedProvider>);
+    render(
+      <MockedProvider mocks={[mock]}>
+        <FooList />
+      </MockedProvider>,
+    );
     expect(await screen.findByText('No foos found.')).toBeInTheDocument();
   });
 
@@ -439,7 +470,11 @@ describe('FooList', () => {
         },
       },
     };
-    render(<MockedProvider mocks={[mock]}><FooList /></MockedProvider>);
+    render(
+      <MockedProvider mocks={[mock]}>
+        <FooList />
+      </MockedProvider>,
+    );
     expect(await screen.findByText('First')).toBeInTheDocument();
     expect(screen.getByText('Second')).toBeInTheDocument();
   });
@@ -449,7 +484,11 @@ describe('FooList', () => {
       request: { query: FoosDocument },
       error: new Error('Network error'),
     };
-    render(<MockedProvider mocks={[mock]}><FooList /></MockedProvider>);
+    render(
+      <MockedProvider mocks={[mock]}>
+        <FooList />
+      </MockedProvider>,
+    );
     expect(await screen.findByText('Error: Network error')).toBeInTheDocument();
   });
 });
@@ -526,16 +565,16 @@ Playwright is configured to auto-start `pnpm dev` on port 5173 locally. Set the 
 
 ### Dev server (vite.config.ts)
 
-| Setting | Value | Notes |
-|---|---|---|
-| Port | `5173` | Vite default |
-| Bind address | `0.0.0.0` (via `pnpm dev --host 0.0.0.0`) | Accessible from other Docker containers |
-| GraphQL proxy | `/graphql` → `java-runner:8080` | Configurable via `VITE_GRAPHQL_URL` env var |
-| Allowed hosts | `node-runner` | Required for Docker networking |
-| Vitest environment | `jsdom` | DOM API available in tests |
-| Vitest globals | `true` | `describe`/`it`/`expect` auto-imported |
-| Vitest setup | `./src/test-setup.ts` | jest-dom matchers |
-| Vitest exclude | `e2e/**`, `node_modules/**` | Keeps E2E tests separate |
+| Setting            | Value                                     | Notes                                       |
+| ------------------ | ----------------------------------------- | ------------------------------------------- |
+| Port               | `5173`                                    | Vite default                                |
+| Bind address       | `0.0.0.0` (via `pnpm dev --host 0.0.0.0`) | Accessible from other Docker containers     |
+| GraphQL proxy      | `/graphql` → `java-runner:8080`           | Configurable via `VITE_GRAPHQL_URL` env var |
+| Allowed hosts      | `node-runner`                             | Required for Docker networking              |
+| Vitest environment | `jsdom`                                   | DOM API available in tests                  |
+| Vitest globals     | `true`                                    | `describe`/`it`/`expect` auto-imported      |
+| Vitest setup       | `./src/test-setup.ts`                     | jest-dom matchers                           |
+| Vitest exclude     | `e2e/**`, `node_modules/**`               | Keeps E2E tests separate                    |
 
 ### Apollo Client (src/graphql.ts)
 
@@ -579,6 +618,7 @@ docker build -t my-project .
 ```
 
 The multi-stage build:
+
 1. **Builder** (`node:22-alpine`): `pnpm install --frozen-lockfile` → `pnpm build` (runs `tsc && vite build`)
 2. **Runtime** (`nginx:1.27-alpine`): Copies `dist/` to nginx html root, copies `nginx.conf`
 
@@ -594,11 +634,11 @@ Exposes port 80. The `FRONTEND_URL` and `VITE_GRAPHQL_URL` env vars are not need
 
 ### Semantic-release rules
 
-| Commit type | Release result |
-|---|---|
-| `feat` | Minor version bump |
+| Commit type               | Release result     |
+| ------------------------- | ------------------ |
+| `feat`                    | Minor version bump |
 | `fix`, `perf`, `refactor` | Patch version bump |
-| `docs`, `test`, `chore` | No release |
+| `docs`, `test`, `chore`   | No release         |
 
 Tag format: `v${version}` (e.g., `v1.1.0`). Only releases from `main` branch.
 
