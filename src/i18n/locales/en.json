@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "Bookstore"
+  },
+  "books": {
+    "heading": "Books",
+    "loading": "Loading books...",
+    "empty": "No books found. Create one above.",
+    "detail": "{{title}} by {{author}} ({{year}})",
+    "detailNoYear": "{{title}} by {{author}}"
+  },
+  "createBook": {
+    "heading": "Add Book",
+    "title": "Title",
+    "author": "Author",
+    "publishedYear": "Published Year",
+    "submit": "Create Book",
+    "submitting": "Creating...",
+    "validation": {
+      "titleRequired": "Title is required",
+      "authorRequired": "Author is required",
+      "yearInvalid": "Invalid year"
+    }
+  },
+  "language": {
+    "switch": "Language"
+  }
+}

@@ -1,30 +1,37 @@
-import { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 import { CreateBookDocument, BooksDocument } from '../graphql/generated';
+import { bookSchema, type BookFormData } from '../schemas/book.schema';
 
 export function CreateBook() {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [publishedYear, setPublishedYear] = useState('');
+  const { t } = useTranslation();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<BookFormData>({
+    resolver: zodResolver(bookSchema),
+    mode: 'onBlur',
+  });
 
   const [createBook, { loading, error }] = useMutation(CreateBookDocument, {
     refetchQueries: [{ query: BooksDocument }],
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !author.trim()) return;
+  const onSubmit = async (data: BookFormData) => {
     try {
       await createBook({
         variables: {
-          title: title.trim(),
-          author: author.trim(),
-          publishedYear: publishedYear ? parseInt(publishedYear, 10) : null,
+          title: data.title,
+          author: data.author,
+          publishedYear: data.publishedYear ? parseInt(data.publishedYear, 10) : null,
         },
       });
-      setTitle('');
-      setAuthor('');
-      setPublishedYear('');
+      reset();
     } catch {
       // error surfaced via the error property from useMutation
     }
@@ -32,29 +39,38 @@ export function CreateBook() {
 
   return (
     <section>
-      <h2>Add Book</h2>
+      <h2>{t('createBook.heading')}</h2>
       <form
-        onSubmit={handleSubmit}
-        style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}
       >
         <label>
-          Title
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          {t('createBook.title')}
+          <input type="text" {...register('title')} />
         </label>
+        {errors.title && <p style={{ color: 'red', margin: 0 }}>{t(errors.title.message!)}</p>}
+
         <label>
-          Author
-          <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} required />
+          {t('createBook.author')}
+          <input type="text" {...register('author')} />
         </label>
+        {errors.author && <p style={{ color: 'red', margin: 0 }}>{t(errors.author.message!)}</p>}
+
         <label>
-          Published Year
-          <input
-            type="number"
-            value={publishedYear}
-            onChange={(e) => setPublishedYear(e.target.value)}
-          />
+          {t('createBook.publishedYear')}
+          <input type="number" {...register('publishedYear')} />
         </label>
-        <button type="submit" disabled={loading} style={{ alignSelf: 'flex-start' }}>
-          {loading ? 'Creating...' : 'Create Book'}
+        {errors.publishedYear && (
+          <p style={{ color: 'red', margin: 0 }}>{t(errors.publishedYear.message!)}</p>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ alignSelf: 'flex-start', marginTop: '0.25rem' }}
+        >
+          {loading ? t('createBook.submitting') : t('createBook.submit')}
         </button>
       </form>
       {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}

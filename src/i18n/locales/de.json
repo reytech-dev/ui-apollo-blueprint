@@ -1,0 +1,28 @@
+{
+  "app": {
+    "title": "Buchhandlung"
+  },
+  "books": {
+    "heading": "Bucher",
+    "loading": "Bucher werden geladen...",
+    "empty": "Keine Bucher gefunden. Erstellen Sie eines oben.",
+    "detail": "{{title}} von {{author}} ({{year}})",
+    "detailNoYear": "{{title}} von {{author}}"
+  },
+  "createBook": {
+    "heading": "Buch hinzufugen",
+    "title": "Titel",
+    "author": "Autor",
+    "publishedYear": "Erscheinungsjahr",
+    "submit": "Buch erstellen",
+    "submitting": "Wird erstellt...",
+    "validation": {
+      "titleRequired": "Titel ist erforderlich",
+      "authorRequired": "Autor ist erforderlich",
+      "yearInvalid": "Ungultiges Jahr"
+    }
+  },
+  "language": {
+    "switch": "Sprache"
+  }
+}

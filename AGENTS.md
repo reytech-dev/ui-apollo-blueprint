@@ -11,6 +11,11 @@ This is a **React 19 + Apollo Client 4 + GraphQL** frontend boilerplate using **
 - **rxjs 7.8** — peer dependency of Apollo Client 4
 - **GraphQL 16** — queries and mutations via codegen-generated `TypedDocumentNode`
 - **@graphql-codegen** — generates TypeScript types, operation types, and `TypedDocumentNode` from schema + `.graphql` operation files
+- **react-hook-form 7** — performant form state management with uncontrolled inputs
+- **zod 4** — schema-based form validation with TypeScript type inference
+- **@hookform/resolvers** — bridges zod schemas to react-hook-form
+- **i18next 26 + react-i18next 17** — internationalization with `useTranslation()` hook
+- **i18next-browser-languagedetector** — auto-detects user language from browser/navigator
 - **Vite 6** — dev server and production bundler
 - **TypeScript 6** — strict mode, `moduleResolution: "bundler"`
 - **Vitest 4** — unit/integration tests with jsdom
@@ -55,19 +60,21 @@ When instructed to create a new project from this blueprint, accept a **project 
 
 Delete the entire `Book` example feature:
 
-| #   | File                                   | Action                                                                                                  |
-| --- | -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| 10  | `src/components/BookList.tsx`          | Delete                                                                                                  |
-| 11  | `src/components/CreateBook.tsx`        | Delete                                                                                                  |
-| 12  | `src/__tests__/BookList.test.tsx`      | Delete                                                                                                  |
-| 13  | `src/__tests__/CreateBook.test.tsx`    | Delete                                                                                                  |
-| 14  | `src/graphql/operations/books.graphql` | Delete (the Book-specific operations)                                                                   |
-| 15  | `src/graphql/schema.graphqls`          | Replace with the new backend schema. Keep at minimum an empty `type Query { _empty: String }` scaffold. |
-| 16  | `src/graphql/generated.ts`             | Delete (stale generated code). Regenerate with `pnpm codegen` after updating the schema.                |
-| 17  | `src/graphql.ts`                       | Strip to minimal Apollo Client setup only (no React imports):                                           |
-| 18  | `src/App.tsx`                          | Strip to a minimal scaffold (a single `<main>` with the project heading). No components imported.       |
-| 19  | `e2e/books.spec.ts`                    | Delete                                                                                                  |
-| 20  | `e2e/auth.setup.ts`                    | Keep as-is (placeholder auth setup, useful for any application)                                         |
+| #   | File                                     | Action                                                                                                  |
+| --- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 10  | `src/components/BookList.tsx`            | Delete                                                                                                  |
+| 11  | `src/components/CreateBook.tsx`          | Delete                                                                                                  |
+| 12  | `src/components/LanguageSwitcher.tsx`     | Delete                                                                                                  |
+| 13  | `src/__tests__/BookList.test.tsx`        | Delete                                                                                                  |
+| 14  | `src/__tests__/CreateBook.test.tsx`      | Delete                                                                                                  |
+| 15  | `src/graphql/operations/books.graphql`   | Delete (the Book-specific operations)                                                                   |
+| 16  | `src/graphql/schema.graphqls`            | Replace with the new backend schema. Keep at minimum an empty `type Query { _empty: String }` scaffold. |
+| 17  | `src/graphql/generated.ts`               | Delete (stale generated code). Regenerate with `pnpm codegen` after updating the schema.                |
+| 18  | `src/schemas/book.schema.ts`             | Delete                                                                                                  |
+| 19  | `src/graphql.ts`                         | Strip to minimal Apollo Client setup only (no React imports):                                           |
+| 20  | `src/App.tsx`                            | Strip to a minimal scaffold (a single `<main>` with the project heading). No components imported.       |
+| 21  | `e2e/books.spec.ts`                      | Delete                                                                                                  |
+| 22  | `e2e/auth.setup.ts`                      | Keep as-is (placeholder auth setup, useful for any application)                                         |
 
 **Minimal `src/graphql.ts` after stripping:**
 
@@ -113,10 +120,17 @@ All commands should pass, confirming the scaffold compiles cleanly and codegen p
 
 ```
 src/
-├── main.tsx                      # Entry point: ApolloProvider + App
+├── main.tsx                      # Entry point: ApolloProvider + App, imports ./i18n
 ├── App.tsx                       # Root component (minimal scaffold)
 ├── graphql.ts                    # Apollo Client configuration only
-├── test-setup.ts                 # jest-dom custom matchers for Vitest
+├── test-setup.ts                 # jest-dom custom matchers + i18next init for Vitest
+├── i18n/
+│   ├── index.ts                  # i18next configuration (LanguageDetector + initReactI18next)
+│   └── locales/                  # JSON translation files per language
+│       ├── en.json
+│       └── de.json
+├── schemas/                      # Zod validation schemas, one per form
+│   └── (new schemas)
 ├── graphql/
 │   ├── schema.graphqls           # Backend schema (source of truth)
 │   ├── generated.ts              # Auto-generated types + hooks + document nodes
@@ -306,10 +320,17 @@ Add `src/graphql/generated.ts` to `.gitignore` if you prefer to regenerate in CI
 ```
 src/
 ├── main.tsx                      # Application entry point
-│                                   wraps <App> in <ApolloProvider> and <StrictMode>
+│                                   wraps <App> in <ApolloProvider> and <StrictMode>, imports ./i18n
 ├── App.tsx                       # Root component — assembles all page sections
 ├── graphql.ts                    # Apollo Client configuration only
-├── test-setup.ts                 # Vitest setup (imports jest-dom matchers)
+├── test-setup.ts                 # Vitest setup (imports jest-dom matchers, inits i18next)
+├── i18n/
+│   ├── index.ts                  # i18next configuration (LanguageDetector + initReactI18next)
+│   └── locales/                  # JSON translation files per language
+│       ├── en.json
+│       └── de.json
+├── schemas/                      # Zod validation schemas, one per form
+│   └── book.schema.ts
 ├── graphql/
 │   ├── schema.graphqls           # Backend GraphQL schema (source of truth)
 │   ├── generated.ts              # Auto-generated: types, TypedDocumentNode exports
@@ -318,7 +339,8 @@ src/
 │       └── foo.graphql
 ├── components/                   # React components, one file per component
 │   ├── BookList.tsx
-│   └── CreateBook.tsx
+│   ├── CreateBook.tsx
+│   └── LanguageSwitcher.tsx
 └── __tests__/                    # Vitest tests, mirrors component paths
     ├── BookList.test.tsx
     └── CreateBook.test.tsx
@@ -415,6 +437,322 @@ const handleSubmit = async (e: React.FormEvent) => {
 ### Component setup pattern
 
 Components should receive data through Apollo hooks, not props. Props are used only for non-data configuration needs (e.g., callbacks from parent layout, display flags).
+
+## Form Validation with react-hook-form + zod
+
+This blueprint uses **react-hook-form** for form state management and **zod** for schema-based validation, connected via `@hookform/resolvers`.
+
+### Setup
+
+```tsx
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+```
+
+### Zod schema pattern
+
+Define a Zod schema in `src/schemas/` that validates form input. Use the schema's TypeScript inference for the form data type:
+
+```ts
+// src/schemas/foo.schema.ts
+import { z } from 'zod';
+
+export const fooSchema = z.object({
+  name: z.string().min(1, 'foo.validation.nameRequired'),
+  count: z.string().refine((val) => val === '' || /^\d+$/.test(val), {
+    message: 'foo.validation.countInvalid',
+  }),
+});
+
+export type FooFormData = z.infer<typeof fooSchema>;
+```
+
+- **Validation messages are i18next translation keys** — the component passes them through `t()` to display localized error text.
+- **react-hook-form sends string values** from all inputs (even `type="number"`). Use `.string()` for the schema and convert in the submit handler, or use `.preprocess()`/`.refine()` on strings to validate numeric ranges.
+- **Export the inferred type** as `FooFormData` for use with `useForm<FooFormData>()`.
+
+### Component usage
+
+```tsx
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
+import { fooSchema, type FooFormData } from '../schemas/foo.schema';
+
+export function CreateFoo() {
+  const { t } = useTranslation();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FooFormData>({
+    resolver: zodResolver(fooSchema),
+    mode: 'onBlur',       // validate on blur AND submit
+  });
+
+  const onSubmit = async (data: FooFormData) => {
+    await createFoo({ variables: { name: data.name } });
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <label>
+        {t('foo.name')}
+        <input type="text" {...register('name')} />
+      </label>
+      {errors.name && <p style={{ color: 'red' }}>{t(errors.name.message!)}</p>}
+
+      <button type="submit">{t('foo.submit')}</button>
+    </form>
+  );
+}
+```
+
+### Key patterns
+
+| Pattern | Detail |
+|---------|--------|
+| `mode: 'onBlur'` | Validates when user leaves a field (blur) AND on submit |
+| `register('name')` | Uncontrolled input — spread into the `<input>` element |
+| `errors.name.message` | Zod error message (a translation key), passed through `t()` |
+| `reset()` | Clears all form fields after successful submit |
+| `handleSubmit(onSubmit)` | Only calls `onSubmit` if validation passes |
+| `noValidate` on `<form>` | Disables browser-native validation to avoid conflicts |
+
+### Form input conventions
+
+- **Uncontrolled inputs**: react-hook-form manages inputs via `ref`, not `useState`. Use `register()` to bind each input.
+- **Number inputs**: HTML `<input type="number">` returns a string through `register()`. Do NOT use `valueAsNumber` — handle conversion in the submit handler or via zod `.refine()`.
+- **Labels**: Wrap `<input>` in `<label>` for automatic association, or use `htmlFor` + `id`.
+
+### Testing forms
+
+Test validation errors by submitting the form with empty or invalid fields, then asserting the translated error messages appear:
+
+```tsx
+it('shows validation errors on submit with empty required fields', async () => {
+  const user = userEvent.setup();
+  render(
+    <MockedProvider>
+      <CreateFoo />
+    </MockedProvider>,
+  );
+
+  await user.click(screen.getByRole('button', { name: 'Create Foo' }));
+
+  expect(await screen.findByText('Name is required')).toBeInTheDocument();
+});
+```
+
+Test blur validation by focusing and tabbing away from a required field:
+
+```tsx
+it('shows validation error on blur for empty field', async () => {
+  const user = userEvent.setup();
+  render(
+    <MockedProvider>
+      <CreateFoo />
+    </MockedProvider>,
+  );
+
+  await user.click(screen.getByLabelText('Name'));
+  await user.tab();
+
+  expect(await screen.findByText('Name is required')).toBeInTheDocument();
+});
+```
+
+## Internationalization with i18next + react-i18next
+
+This blueprint uses **i18next** for text internationalization and **react-i18next** for the React binding. The `i18next-browser-languagedetector` plugin auto-detects the user's language from `localStorage` (persisted choice) or `navigator.language` (browser default).
+
+### File structure
+
+```
+src/i18n/
+├── index.ts          # i18next configuration + LanguageDetector + initReactI18next
+└── locales/
+    ├── en.json       # English translations
+    └── de.json       # German translations (example second language)
+```
+
+### Configuration (`src/i18n/index.ts`)
+
+```ts
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import en from './locales/en.json';
+import de from './locales/de.json';
+
+const resources = {
+  en: { translation: en },
+  de: { translation: de },
+};
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources,
+    fallbackLng: 'en',
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
+    interpolation: {
+      escapeValue: false,  // React already escapes output
+    },
+  });
+
+export default i18n;
+```
+
+### Translation file structure (`en.json`)
+
+Organize keys by feature/section. Nesting is encouraged:
+
+```json
+{
+  "app": {
+    "title": "My App"
+  },
+  "foo": {
+    "heading": "Foos",
+    "loading": "Loading foos...",
+    "empty": "No foos found.",
+    "detail": "{{name}} ({{count}})",
+    "name": "Name",
+    "submit": "Create Foo",
+    "validation": {
+      "nameRequired": "Name is required",
+      "countInvalid": "Count must be a number"
+    }
+  },
+  "language": {
+    "switch": "Language"
+  }
+}
+```
+
+### Component usage
+
+Import `useTranslation` and use the `t()` function for all user-visible text:
+
+```tsx
+import { useTranslation } from 'react-i18next';
+
+export function FooList() {
+  const { t } = useTranslation();
+  const { loading, error, data } = useQuery(FoosDocument);
+
+  if (loading) return <p>{t('foo.loading')}</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const foos = data?.foos ?? [];
+
+  if (foos.length === 0) return <p>{t('foo.empty')}</p>;
+
+  return (
+    <section>
+      <h2>{t('foo.heading')}</h2>
+      <ul>
+        {foos.map((foo) => (
+          <li key={foo.id}>
+            {t('foo.detail', { name: foo.name, count: foo.count })}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+### Interpolation
+
+Pass variables as the second argument to `t()`. Use `{{variableName}}` in the translation value:
+
+```json
+"detail": "{{title}} by {{author}} ({{year}})"
+```
+
+```tsx
+t('detail', { title: book.title, author: book.author, year: book.publishedYear })
+// -> "Clean Code by Robert C. Martin (2008)"
+```
+
+### Language switching
+
+The `i18n` object from `useTranslation()` provides `changeLanguage()` and `language`:
+
+```tsx
+import { useTranslation } from 'react-i18next';
+
+export function LanguageSwitcher() {
+  const { t, i18n } = useTranslation();
+
+  return (
+    <select
+      value={i18n.language}
+      onChange={(e) => i18n.changeLanguage(e.target.value)}
+      aria-label={t('language.switch')}
+    >
+      <option value="en">English</option>
+      <option value="de">Deutsch</option>
+    </select>
+  );
+}
+```
+
+The language detector caches the user's choice in `localStorage`, so the preference persists across page reloads.
+
+### Test setup
+
+i18next must be initialized in `test-setup.ts` **without** `LanguageDetector` (browser APIs are unavailable in jsdom):
+
+```ts
+// src/test-setup.ts
+import '@testing-library/jest-dom/vitest';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import en from './i18n/locales/en.json';
+
+i18n.use(initReactI18next).init({
+  lng: 'en',
+  fallbackLng: 'en',
+  resources: { en: { translation: en } },
+  interpolation: { escapeValue: false },
+});
+```
+
+- i18next is a **singleton** — initializing it once in `test-setup.ts` makes it available to all components via `useTranslation()`.
+- Tests use English translations by default. If you need to test multi-language behavior in unit tests, call `i18n.changeLanguage('de')` within the test.
+- The browser `src/i18n/index.ts` file is **not imported** in tests — only in `main.tsx` for the browser app.
+- Do **not** mock `useTranslation()` or `react-i18next`. Components use the real i18next singleton configured in `test-setup.ts`.
+
+### E2E testing with multiple languages
+
+Use Playwright's `page.getByLabel` and `page.getByRole` with translated text, or switch the language selector in the test:
+
+```ts
+test('switches language to German', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Language').selectOption('de');
+  await expect(page.getByRole('heading', { name: 'Buchhandlung' })).toBeVisible();
+});
+```
+
+### Adding a new language
+
+1. Create a new JSON file in `src/i18n/locales/` (e.g., `fr.json`) with all translation keys.
+2. Import it in `src/i18n/index.ts` and add it to the `resources` object.
+3. Add the `<option>` to the `LanguageSwitcher` component.
+
+
 
 ## Testing Patterns
 
@@ -560,6 +898,18 @@ test('can create and view a foo', { tag: '@smoke' }, async ({ page }) => {
 ```
 
 Playwright is configured to auto-start `pnpm dev` on port 5173 locally. Set the `FRONTEND_URL` env var to run against an already-running server instead (used in CI/Docker environments).
+
+### E2E testing with translations
+
+All E2E tests should use Playwright's semantic locators (`getByRole`, `getByLabel`) with the **default English text**. To test other languages, switch the language selector in the test first:
+
+```ts
+test('displays in German', { tag: '@smoke' }, async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Language').selectOption('de');
+  await expect(page.getByRole('heading', { name: 'Buchhandlung' })).toBeVisible();
+});
+```
 
 ## Vite / Apollo Configuration
 

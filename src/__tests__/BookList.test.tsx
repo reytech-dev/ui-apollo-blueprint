@@ -67,11 +67,10 @@ describe('BookList', () => {
       </MockedProvider>,
     );
 
-    expect(await screen.findByText('Clean Code')).toBeInTheDocument();
-    expect(screen.getByText(/Robert C. Martin/)).toBeInTheDocument();
-    expect(screen.getByText('Refactoring')).toBeInTheDocument();
-    expect(screen.getByText(/Martin Fowler/)).toBeInTheDocument();
-    expect(screen.getByText(/2008/)).toBeInTheDocument();
+    expect(
+      await screen.findByText('Clean Code by Robert C. Martin (2008)'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Refactoring by Martin Fowler')).toBeInTheDocument();
   });
 
   it('shows error state', async () => {

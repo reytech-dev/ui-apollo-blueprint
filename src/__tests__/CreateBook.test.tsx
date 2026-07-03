@@ -19,29 +19,52 @@ describe('CreateBook', () => {
     expect(screen.getByRole('button', { name: 'Create Book' })).toBeInTheDocument();
   });
 
-  it('does not submit with empty required fields', async () => {
+  it('shows validation errors on submit with empty required fields', async () => {
     const user = userEvent.setup();
-    const mock = {
-      request: {
-        query: CreateBookDocument,
-        variables: { title: '', author: '', publishedYear: null },
-      },
-      result: {
-        data: {
-          createBook: { id: '1', title: '', author: '', publishedYear: null, __typename: 'Book' },
-          __typename: 'Mutation',
-        },
-      },
-    };
 
     render(
-      <MockedProvider mocks={[mock]}>
+      <MockedProvider>
         <CreateBook />
       </MockedProvider>,
     );
 
     await user.click(screen.getByRole('button', { name: 'Create Book' }));
-    expect(screen.getByLabelText('Title')).toBeInTheDocument();
+
+    expect(await screen.findByText('Title is required')).toBeInTheDocument();
+    expect(screen.getByText('Author is required')).toBeInTheDocument();
+  });
+
+  it('shows validation error for out-of-range year', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MockedProvider>
+        <CreateBook />
+      </MockedProvider>,
+    );
+
+    await user.type(screen.getByLabelText('Title'), 'Test');
+    await user.type(screen.getByLabelText('Author'), 'Test Author');
+    await user.type(screen.getByLabelText('Published Year'), '1000');
+    await user.click(screen.getByRole('button', { name: 'Create Book' }));
+
+    expect(await screen.findByText('Invalid year')).toBeInTheDocument();
+  });
+
+  it('shows validation error on blur for empty title', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <MockedProvider>
+        <CreateBook />
+      </MockedProvider>,
+    );
+
+    const titleInput = screen.getByLabelText('Title');
+    await user.click(titleInput);
+    await user.tab();
+
+    expect(await screen.findByText('Title is required')).toBeInTheDocument();
   });
 
   it('submits and clears the form on success', async () => {
