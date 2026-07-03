@@ -1,3 +1,14 @@
+## [1.3.0](https://github.com/reytech-dev/ui-apollo-blueprint/compare/v1.2.0...v1.3.0) (2026-07-03)
+
+### Features
+
+* **packages:** add i18n package and form validation to example application ([3db2fdf](https://github.com/reytech-dev/ui-apollo-blueprint/commit/3db2fdf9e764280dca3cc3a13bd2e415d3dfbdd3))
+
+### Chores
+
+* **ci:** upgrade action versions to remove deprecation warnings ([d243492](https://github.com/reytech-dev/ui-apollo-blueprint/commit/d243492bc35366affe5021ab6b8cba0bc869c431))
+* **prettier:** apply prettier changes ([0ee515d](https://github.com/reytech-dev/ui-apollo-blueprint/commit/0ee515d45dfb937114426e6c36790b02aefdf05b))
+
 ## [1.2.0](https://github.com/reytech-dev/ui-apollo-blueprint/compare/v1.1.0...v1.2.0) (2026-06-11)
 
 ### Features
