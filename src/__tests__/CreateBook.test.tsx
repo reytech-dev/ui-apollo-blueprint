@@ -2,9 +2,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CreateBook } from '../components/CreateBook';
 import { CreateBookDocument, BooksDocument } from '../graphql/generated';
+import { useNotificationStore } from '../stores/notification.store';
 
 const mockNavigate = vi.fn();
 
@@ -28,6 +29,11 @@ function renderWithRouter(
 }
 
 describe('CreateBook', () => {
+  beforeEach(() => {
+    useNotificationStore.setState({ notifications: [] });
+    mockNavigate.mockClear();
+  });
+
   it('renders the form with inputs and submit button', () => {
     renderWithRouter(
       <MockedProvider>
@@ -130,6 +136,13 @@ describe('CreateBook', () => {
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('/books');
+    });
+
+    const state = useNotificationStore.getState();
+    expect(state.notifications).toHaveLength(1);
+    expect(state.notifications[0]).toMatchObject({
+      type: 'success',
+      message: 'Book created successfully',
     });
   });
 });

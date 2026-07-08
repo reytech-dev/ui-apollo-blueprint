@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { BookList } from './components/BookList';
 import { CreateBook } from './components/CreateBook';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { NotificationToast } from './components/NotificationToast';
 
 function Layout() {
   const { t } = useTranslation();
@@ -18,6 +19,7 @@ function Layout() {
         <Link to="/books/create">{t('nav.createBook')}</Link>
       </nav>
       <Outlet />
+      <NotificationToast />
     </main>
   );
 }

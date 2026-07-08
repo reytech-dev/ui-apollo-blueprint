@@ -28,5 +28,9 @@
   "nav": {
     "booksList": "Bücher",
     "createBook": "Buch erstellen"
+  },
+  "notification": {
+    "bookCreated": "Buch erfolgreich erstellt",
+    "bookCreateFailed": "Fehler beim Erstellen des Buches"
   }
 }

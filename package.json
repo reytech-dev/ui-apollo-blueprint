@@ -29,7 +29,8 @@
     "react-i18next": "^17.0.8",
     "react-router-dom": "^7.18.1",
     "rxjs": "^7.8.1",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",

@@ -16,6 +16,7 @@ test.describe('Bookstore', () => {
     await page.getByRole('button', { name: 'Create Book' }).click();
 
     await expect(page).toHaveURL('/books');
+    await expect(page.getByText('Book created successfully')).toBeVisible();
     await expect(page.getByText('Clean Code by Robert C. Martin (2008)')).toBeVisible();
   });
 

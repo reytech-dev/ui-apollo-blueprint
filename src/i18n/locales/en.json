@@ -28,5 +28,9 @@
   "nav": {
     "booksList": "Books",
     "createBook": "Add Book"
+  },
+  "notification": {
+    "bookCreated": "Book created successfully",
+    "bookCreateFailed": "Failed to create book"
   }
 }

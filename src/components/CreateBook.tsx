@@ -5,10 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { CreateBookDocument, BooksDocument } from '../graphql/generated';
 import { bookSchema, type BookFormData } from '../schemas/book.schema';
+import { useNotificationStore } from '../stores/notification.store';
 
 export function CreateBook() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const addNotification = useNotificationStore((state) => state.addNotification);
 
   const {
     register,
@@ -32,9 +34,10 @@ export function CreateBook() {
           publishedYear: data.publishedYear ? parseInt(data.publishedYear, 10) : null,
         },
       });
+      addNotification('success', t('notification.bookCreated'));
       navigate('/books');
     } catch {
-      // error surfaced via the error property from useMutation
+      addNotification('error', t('notification.bookCreateFailed'));
     }
   };
 

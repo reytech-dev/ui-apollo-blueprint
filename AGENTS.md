@@ -15,6 +15,7 @@ This is a **React 19 + Apollo Client 4 + GraphQL** frontend boilerplate using **
 - **react-hook-form 7** — performant form state management with uncontrolled inputs
 - **zod 4** — schema-based form validation with TypeScript type inference
 - **@hookform/resolvers** — bridges zod schemas to react-hook-form
+- **zustand 5** — lightweight client-side state management with hooks
 - **i18next 26 + react-i18next 17** — internationalization with `useTranslation()` hook
 - **i18next-browser-languagedetector** — auto-detects user language from browser/navigator
 - **Vite 6** — dev server and production bundler
@@ -132,6 +133,8 @@ src/
 │       └── de.json
 ├── schemas/                      # Zod validation schemas, one per form
 │   └── (new schemas)
+├── stores/                        # Zustand stores for client-side state
+│   └── (new stores)
 ├── graphql/
 │   ├── schema.graphqls           # Backend schema (source of truth)
 │   ├── generated.ts              # Auto-generated types + hooks + document nodes
@@ -332,6 +335,8 @@ src/
 │       └── de.json
 ├── schemas/                      # Zod validation schemas, one per form
 │   └── book.schema.ts
+├── stores/                        # Zustand stores for client-side state
+│   └── notification.store.ts
 ├── graphql/
 │   ├── schema.graphqls           # Backend GraphQL schema (source of truth)
 │   ├── generated.ts              # Auto-generated: types, TypedDocumentNode exports
@@ -362,6 +367,8 @@ codegen.ts                        # GraphQL Codegen configuration
 | **`src/graphql/generated.ts`**    | Auto-generated: schema types, operation types, `TypedDocumentNode` exports | Never hand-edit. Run `pnpm codegen` to regenerate.                                                                                            |
 | **`src/App.tsx`**                 | Route definitions, layout shell, navigation                           | Import `Routes`, `Route`, `Outlet`, `Link` from `react-router-dom`. Use `<Navigate>` for redirects.                                              |
 | **`src/main.tsx`**               | Application entry point, provider wiring                              | Render providers in order: `StrictMode` > `ApolloProvider` > `BrowserRouter` > `App`.                                                            |
+| **`src/schemas/`**                | Zod validation schemas, one per form                                    | Export schema and inferred type. Validation messages are i18next translation keys.                                                             |
+| **`src/stores/`**                 | Zustand stores for client-side state                                     | One store per domain. Use selectors for performance. Reset stores in `beforeEach` for tests.                                                   |
 | **`src/graphql.ts`**              | Apollo Client configuration only                                           | No operations or React imports here.                                                                                                          |
 | **`src/components/`**             | React components, UI rendering, user interaction                           | Import hooks (`useQuery`, `useMutation`) from `@apollo/client/react`. Import `*Document` nodes from `generated.ts`. Handle all render states. |
 | **`src/__tests__/`**              | Unit tests for components                                                  | Use `MockedProvider` from `@apollo/client/testing/react` with `*Document` nodes. Test all states.                                             |
@@ -566,6 +573,81 @@ it('shows validation error on blur for empty field', async () => {
   await user.tab();
 
   expect(await screen.findByText('Name is required')).toBeInTheDocument();
+});
+```
+
+## State Management with Zustand
+
+This blueprint uses **zustand** for client-side state management — state that is not derived from the server (GraphQL) but is needed by the UI, such as notifications, auth state, or toggle states.
+
+### Store pattern
+
+Create one store file per domain in `src/stores/`. Export a hook that components subscribe to:
+
+```ts
+// src/stores/foo.store.ts
+import { create } from 'zustand';
+
+interface FooStore {
+  items: string[];
+  addItem: (item: string) => void;
+  removeItem: (item: string) => void;
+}
+
+export const useFooStore = create<FooStore>((set) => ({
+  items: [],
+  addItem: (item) => set((state) => ({ items: [...state.items, item] })),
+  removeItem: (item) => set((state) => ({ items: state.items.filter((i) => i !== item) })),
+}));
+```
+
+### Using stores in components
+
+Use selectors to subscribe to only the slice of state the component needs. Without a selector, the component re-renders on every store change:
+
+```tsx
+import { useFooStore } from '../stores/foo.store';
+
+// Select a single field — component only re-renders when `items` changes
+const items = useFooStore((state) => state.items);
+
+// Select an action — action references are stable and never cause re-renders
+const addItem = useFooStore((state) => state.addItem);
+```
+
+### Testing stores
+
+**Pure store tests** — Test the store in isolation with no React rendering. Reset state in `beforeEach`:
+
+```ts
+import { describe, it, expect, beforeEach } from 'vitest';
+import { useFooStore } from '../stores/foo.store';
+
+describe('fooStore', () => {
+  beforeEach(() => {
+    useFooStore.setState({ items: [] });
+  });
+
+  it('adds an item', () => {
+    useFooStore.getState().addItem('hello');
+    expect(useFooStore.getState().items).toEqual(['hello']);
+  });
+});
+```
+
+**Component integration tests** — Components that use stores require no special mocking. Reset the store in `beforeEach` to ensure test isolation:
+
+```tsx
+describe('FooComponent', () => {
+  beforeEach(() => {
+    useFooStore.setState({ items: [] });
+  });
+
+  it('renders items from the store', () => {
+    useFooStore.getState().addItem('test');
+    render(<FooComponent />);
+    expect(screen.getByText('test')).toBeInTheDocument();
+  });
 });
 ```
 
