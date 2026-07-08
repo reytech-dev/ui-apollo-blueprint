@@ -24,5 +24,9 @@
   },
   "language": {
     "switch": "Sprache"
+  },
+  "nav": {
+    "booksList": "Bücher",
+    "createBook": "Buch erstellen"
   }
 }

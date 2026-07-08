@@ -11,6 +11,7 @@ This is a **React 19 + Apollo Client 4 + GraphQL** frontend boilerplate using **
 - **rxjs 7.8** — peer dependency of Apollo Client 4
 - **GraphQL 16** — queries and mutations via codegen-generated `TypedDocumentNode`
 - **@graphql-codegen** — generates TypeScript types, operation types, and `TypedDocumentNode` from schema + `.graphql` operation files
+- **react-router-dom 7** — client-side routing with `<BrowserRouter>`, `<Routes>`, `<Route>`, `<Outlet>`, `<Link>`, `useNavigate`
 - **react-hook-form 7** — performant form state management with uncontrolled inputs
 - **zod 4** — schema-based form validation with TypeScript type inference
 - **@hookform/resolvers** — bridges zod schemas to react-hook-form
@@ -320,8 +321,8 @@ Add `src/graphql/generated.ts` to `.gitignore` if you prefer to regenerate in CI
 ```
 src/
 ├── main.tsx                      # Application entry point
-│                                   wraps <App> in <ApolloProvider> and <StrictMode>, imports ./i18n
-├── App.tsx                       # Root component — assembles all page sections
+│                                   wraps <App> in <ApolloProvider>, <BrowserRouter>, and <StrictMode>, imports ./i18n
+├── App.tsx                       # Root component — Layout with <Outlet>, <Routes>, <Route>, navigation, and redirects
 ├── graphql.ts                    # Apollo Client configuration only
 ├── test-setup.ts                 # Vitest setup (imports jest-dom matchers, inits i18next)
 ├── i18n/
@@ -359,6 +360,8 @@ codegen.ts                        # GraphQL Codegen configuration
 | **`src/graphql/schema.graphqls`** | Backend schema — the source of truth                                       | Never hand-edit types here. Copy from the backend repo.                                                                                       |
 | **`src/graphql/operations/`**     | GraphQL operations in `.graphql` files                                     | One file per feature or per operation. No `gql` tags needed — pure GraphQL syntax.                                                            |
 | **`src/graphql/generated.ts`**    | Auto-generated: schema types, operation types, `TypedDocumentNode` exports | Never hand-edit. Run `pnpm codegen` to regenerate.                                                                                            |
+| **`src/App.tsx`**                 | Route definitions, layout shell, navigation                           | Import `Routes`, `Route`, `Outlet`, `Link` from `react-router-dom`. Use `<Navigate>` for redirects.                                              |
+| **`src/main.tsx`**               | Application entry point, provider wiring                              | Render providers in order: `StrictMode` > `ApolloProvider` > `BrowserRouter` > `App`.                                                            |
 | **`src/graphql.ts`**              | Apollo Client configuration only                                           | No operations or React imports here.                                                                                                          |
 | **`src/components/`**             | React components, UI rendering, user interaction                           | Import hooks (`useQuery`, `useMutation`) from `@apollo/client/react`. Import `*Document` nodes from `generated.ts`. Handle all render states. |
 | **`src/__tests__/`**              | Unit tests for components                                                  | Use `MockedProvider` from `@apollo/client/testing/react` with `*Document` nodes. Test all states.                                             |
@@ -374,7 +377,7 @@ codegen.ts                        # GraphQL Codegen configuration
 4. **Write unit tests** for the component (TDD: failing first). Use `MockedProvider` from `@apollo/client/testing/react` with `*Document` nodes from `generated.ts`. Include `__typename` in mock data.
 5. **Create the React component** in `src/components/`. Import `useQuery` / `useMutation` from `@apollo/client/react`, and `*Document` nodes from `generated.ts`. Handle all 4 states: loading, error, empty, and populated.
 6. **Add E2E smoke test** in `e2e/` if the feature is a critical user flow. Tag with `@smoke`.
-7. **Wire into `App.tsx`** — import and render the new component.
+7. **Wire into `App.tsx`** — add a `<Route>` inside the layout route, e.g., `<Route path="foos" element={<FooList />} />`. Add a `<Link>` in the layout nav if needed.
 
 ### Component state handling
 
@@ -758,10 +761,11 @@ test('switches language to German', async ({ page }) => {
 
 ### Unit tests (Vitest + Testing Library)
 
-Uses Apollo `MockedProvider` to control GraphQL responses. Import mock matchers from `test-setup.ts` (jest-dom).
+Uses Apollo `MockedProvider` to control GraphQL responses. Import mock matchers from `test-setup.ts` (jest-dom). Components that use router hooks (`useNavigate`, `useParams`, `useLocation`) or `<Link>` / `<NavLink>` must be wrapped in `<MemoryRouter>`.
 
 ```tsx
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { describe, it, expect } from 'vitest';
 import { FooList } from '../components/FooList';
@@ -776,7 +780,9 @@ describe('FooList', () => {
     };
     render(
       <MockedProvider mocks={[mock]}>
-        <FooList />
+        <MemoryRouter>
+          <FooList />
+        </MemoryRouter>
       </MockedProvider>,
     );
     expect(screen.getByText('Loading foos...')).toBeInTheDocument();
@@ -789,7 +795,9 @@ describe('FooList', () => {
     };
     render(
       <MockedProvider mocks={[mock]}>
-        <FooList />
+        <MemoryRouter>
+          <FooList />
+        </MemoryRouter>
       </MockedProvider>,
     );
     expect(await screen.findByText('No foos found.')).toBeInTheDocument();
@@ -810,7 +818,9 @@ describe('FooList', () => {
     };
     render(
       <MockedProvider mocks={[mock]}>
-        <FooList />
+        <MemoryRouter>
+          <FooList />
+        </MemoryRouter>
       </MockedProvider>,
     );
     expect(await screen.findByText('First')).toBeInTheDocument();
@@ -824,7 +834,9 @@ describe('FooList', () => {
     };
     render(
       <MockedProvider mocks={[mock]}>
-        <FooList />
+        <MemoryRouter>
+          <FooList />
+        </MemoryRouter>
       </MockedProvider>,
     );
     expect(await screen.findByText('Error: Network error')).toBeInTheDocument();
@@ -841,6 +853,7 @@ Use `userEvent` from `@testing-library/user-event` for realistic interactions. M
 ```tsx
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { describe, it, expect } from 'vitest';
 import { CreateFoo } from '../components/CreateFoo';
@@ -864,7 +877,9 @@ describe('CreateFoo', () => {
     };
     render(
       <MockedProvider mocks={[createMock, refetchMock]}>
-        <CreateFoo />
+        <MemoryRouter>
+          <CreateFoo />
+        </MemoryRouter>
       </MockedProvider>,
     );
     await user.type(screen.getByLabelText('Name'), 'My Foo');
@@ -886,13 +901,15 @@ Tag smoke tests with `@smoke` so they run in the `smoke-chromium` project on eve
 import { test, expect } from '@playwright/test';
 
 test('can create and view a foo', { tag: '@smoke' }, async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/foos');
 
   await expect(page.getByRole('heading', { name: 'My App' })).toBeVisible();
 
+  await page.getByRole('link', { name: 'Add Foo' }).click();
   await page.getByLabel('Name').fill('My Foo');
   await page.getByRole('button', { name: 'Create Foo' }).click();
 
+  await expect(page).toHaveURL('/foos');
   await expect(page.getByText('My Foo')).toBeVisible();
 });
 ```
@@ -905,7 +922,7 @@ All E2E tests should use Playwright's semantic locators (`getByRole`, `getByLabe
 
 ```ts
 test('displays in German', { tag: '@smoke' }, async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/books');
   await page.getByLabel('Language').selectOption('de');
   await expect(page.getByRole('heading', { name: 'Buchhandlung' })).toBeVisible();
 });

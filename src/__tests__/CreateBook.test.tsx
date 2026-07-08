@@ -1,13 +1,35 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { CreateBook } from '../components/CreateBook';
 import { CreateBookDocument, BooksDocument } from '../graphql/generated';
 
+const mockNavigate = vi.fn();
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+function renderWithRouter(
+  ui: React.ReactElement,
+  { initialEntries = ['/books/create'] }: { initialEntries?: string[] } = {},
+) {
+  return render(
+    <MockedProvider>
+      <MemoryRouter initialEntries={initialEntries}>{ui}</MemoryRouter>
+    </MockedProvider>,
+  );
+}
+
 describe('CreateBook', () => {
   it('renders the form with inputs and submit button', () => {
-    render(
+    renderWithRouter(
       <MockedProvider>
         <CreateBook />
       </MockedProvider>,
@@ -22,7 +44,7 @@ describe('CreateBook', () => {
   it('shows validation errors on submit with empty required fields', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithRouter(
       <MockedProvider>
         <CreateBook />
       </MockedProvider>,
@@ -37,7 +59,7 @@ describe('CreateBook', () => {
   it('shows validation error for out-of-range year', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithRouter(
       <MockedProvider>
         <CreateBook />
       </MockedProvider>,
@@ -54,7 +76,7 @@ describe('CreateBook', () => {
   it('shows validation error on blur for empty title', async () => {
     const user = userEvent.setup();
 
-    render(
+    renderWithRouter(
       <MockedProvider>
         <CreateBook />
       </MockedProvider>,
@@ -67,7 +89,7 @@ describe('CreateBook', () => {
     expect(await screen.findByText('Title is required')).toBeInTheDocument();
   });
 
-  it('submits and clears the form on success', async () => {
+  it('submits and navigates to books on success', async () => {
     const user = userEvent.setup();
     const createBookMock = {
       request: {
@@ -93,7 +115,9 @@ describe('CreateBook', () => {
       result: { data: { books: [], __typename: 'Query' } },
     };
 
-    render(
+    mockNavigate.mockClear();
+
+    renderWithRouter(
       <MockedProvider mocks={[createBookMock, refetchMock]}>
         <CreateBook />
       </MockedProvider>,
@@ -105,7 +129,7 @@ describe('CreateBook', () => {
     await user.click(screen.getByRole('button', { name: 'Create Book' }));
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Title')).toHaveValue('');
+      expect(mockNavigate).toHaveBeenCalledWith('/books');
     });
   });
 });

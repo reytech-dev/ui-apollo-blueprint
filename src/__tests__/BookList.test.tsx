@@ -1,8 +1,17 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { MockedProvider } from '@apollo/client/testing/react';
 import { describe, it, expect } from 'vitest';
 import { BookList } from '../components/BookList';
 import { BooksDocument } from '../graphql/generated';
+
+function renderWithRouter(ui: React.ReactElement) {
+  return render(
+    <MockedProvider>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </MockedProvider>,
+  );
+}
 
 describe('BookList', () => {
   it('shows loading state', () => {
@@ -12,7 +21,7 @@ describe('BookList', () => {
       delay: Infinity,
     };
 
-    render(
+    renderWithRouter(
       <MockedProvider mocks={[mock]}>
         <BookList />
       </MockedProvider>,
@@ -26,7 +35,7 @@ describe('BookList', () => {
       result: { data: { books: [], __typename: 'Query' } },
     };
 
-    render(
+    renderWithRouter(
       <MockedProvider mocks={[mock]}>
         <BookList />
       </MockedProvider>,
@@ -61,7 +70,7 @@ describe('BookList', () => {
       },
     };
 
-    render(
+    renderWithRouter(
       <MockedProvider mocks={[mock]}>
         <BookList />
       </MockedProvider>,
@@ -79,7 +88,7 @@ describe('BookList', () => {
       error: new Error('Network error'),
     };
 
-    render(
+    renderWithRouter(
       <MockedProvider mocks={[mock]}>
         <BookList />
       </MockedProvider>,

@@ -2,16 +2,17 @@ import { useMutation } from '@apollo/client/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { CreateBookDocument, BooksDocument } from '../graphql/generated';
 import { bookSchema, type BookFormData } from '../schemas/book.schema';
 
 export function CreateBook() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<BookFormData>({
     resolver: zodResolver(bookSchema),
@@ -31,7 +32,7 @@ export function CreateBook() {
           publishedYear: data.publishedYear ? parseInt(data.publishedYear, 10) : null,
         },
       });
-      reset();
+      navigate('/books');
     } catch {
       // error surfaced via the error property from useMutation
     }
