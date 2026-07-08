@@ -1,3 +1,10 @@
+## [1.4.0](https://github.com/reytech-dev/ui-apollo-blueprint/compare/v1.3.0...v1.4.0) (2026-07-08)
+
+### Features
+
+* **react-dom-router:** add router to ui blueprint ([edabe02](https://github.com/reytech-dev/ui-apollo-blueprint/commit/edabe021b530942788abfdc55901cbe5de29f3b6))
+* **zustand:** add zustand for state management ([cf54d5e](https://github.com/reytech-dev/ui-apollo-blueprint/commit/cf54d5e151e4e4c6dd710f437698c9ab4bb34b66))
+
 ## [1.3.0](https://github.com/reytech-dev/ui-apollo-blueprint/compare/v1.2.0...v1.3.0) (2026-07-03)
 
 ### Features
